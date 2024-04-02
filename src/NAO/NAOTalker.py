@@ -11,6 +11,7 @@ class NAOTalker(Talker):
     def __init__(self, ip: str, language: str = "en", sleep_len: float = 0.03, stand=False, volume: int = 100):
         super().__init__(language = language)
         self.ip = ip
+        print("creating NAO wit ip",ip)
         self.sleep_len = sleep_len
         self.language = iso639.Lang(language).name
         self.volume = volume
@@ -18,6 +19,7 @@ class NAOTalker(Talker):
         fd = path.dirname(path.realpath(__file__))
         root_dir = path.dirname(path.dirname(path.dirname(path.realpath(__file__))))
         self.talker_path = fd + "/NAOTalkerPy2.py"
+        print(self.talker_path)
         self.src_path = fd + "/py2_nao_source.sh"
         if not path.exists(self.talker_path):
             raise RuntimeError(f"NAOTalker can't find 'talker.py' at {self.talker_path}")
@@ -26,6 +28,7 @@ class NAOTalker(Talker):
         if not path.isdir(root_dir + "/pynaoqi"):
             raise RuntimeError(f"NAOTalker can't find PyNaoQi at {root_dir}")
         if not path.exists(self.src_path):
+            print("Here")
             f = open(self.src_path,"w")
             f.write(f"export PYTHONPATH=$PYTHONPATH:{root_dir}/pynaoqi\n")
             f.write(f"export LD_LIBRARY_PATH=$LD_LIBRARY_PATH:{root_dir}/choregrapher/lib")
@@ -38,10 +41,12 @@ class NAOTalker(Talker):
     def nao_say(self, to_say):
         for token in ["'",'"']:
             to_say = to_say.replace(token,"")
-        sp.run(
-            f"source {self.src_path} ; echo '{to_say}' | tr -d '\n' | python2 {self.talker_path} {self.ip} {self.language} {self.volume}",
+        print(to_say)
+        ls = sp.run(
+            f"source {self.src_path} ; echo '{to_say}' | tr -d '\n' | python2.7 {self.talker_path} {self.ip} {self.language} {self.volume}",
             shell=True, env={},executable='/bin/bash',stdout=sp.DEVNULL
         )
+        print(ls)
 
     def say(self, to_say: str, first: bool = False, last: bool = False):
         """

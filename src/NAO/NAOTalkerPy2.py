@@ -52,12 +52,12 @@ class Talker(cmd.Cmd, object):
             print("Error creating proxy to ALAnimatedSpeech for " + robot)
             print(e.message)
             exit(0)
-        try:
-            self._audio = ALProxy("ALAudioDevice", robot, 9559)
-        except Exception, e:
-            print("Error creating proxy to ALAudioDevice for " + robot)
-            print(e.message)
-            exit(0)
+        #try:
+        #    self._audio = ALProxy("ALAudioDevice", robot, 9559)
+        #except Exception, e:
+        #    print("Error creating proxy to ALAudioDevice for " + robot)
+        #    print(e.message)
+        #    exit(0)
         try:
             self._motion = ALProxy("ALMotion", robot, 9559)
         except Exception, e:
@@ -82,6 +82,10 @@ class Talker(cmd.Cmd, object):
             print("Error creating proxy to ALTracker")
             print(e.message)
             exit(0)
+        self._tts.setParameter("speed", 20)
+        self._tts.resetSpeed()
+
+        print("success init of talker2")
 
 
             
@@ -90,7 +94,7 @@ class Talker(cmd.Cmd, object):
             self._tts.setLanguage(language)
         else:
             self._tts.setLanguage("English")
-        self._audio.setOutputVolume(volume)
+        #self._audio.setOutputVolume(volume)
 
         self._modifier = "\RSPD=75\ "
         self._index = 0
@@ -134,11 +138,11 @@ class Talker(cmd.Cmd, object):
         self.help_t()
     def do_t(self, line):
         if(WALKING):
-            self._tts.post.say(self._lines[self._index])
+            self._tts.post.say(line[self._index])
         else:
-            self._talk.post.say(self._modifier + self._lines[self._index])
+            self._talk.post.say(self._modifier + line[self._index])
         self._index += 1
-        if self._index > len(self._lines)-1:
+        if self._index > len(line)-1:
             self._index = 0
     def help_t(self):
         print("Says something random")
